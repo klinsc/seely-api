@@ -1,26 +1,48 @@
+// users.service.ts
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: Repository<User>,
+  ) {}
+
+  async create(createUserDto: CreateUserDto) {
+    // create hash
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    // replace hashed to password
+    const user = {
+      ...createUserDto,
+      password: hashedPassword,
+    };
+
+    // save new user with hashed password
+    return this.repository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findByUsername(username: string) {
+    return this.repository.findOneByOrFail({ username });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  async upsertByKeycloakId(
+    username: string,
+    keycloakId: string,
+  ): Promise<User> {
+    const result = await this.repository.upsert(
+      { username, keycloakId },
+      {
+        conflictPaths: ['keycloakId'],
+      },
+    );
+    console.log('upset', result);
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.repository.findOneByOrFail({ keycloakId });
   }
 }
