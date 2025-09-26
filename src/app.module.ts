@@ -40,6 +40,7 @@ import { dataSourceOpts } from './data-source';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .apply(LoginLoggerMiddleware)
       .forRoutes(
         { path: '*auth/login', method: RequestMethod.POST },
