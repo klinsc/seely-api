@@ -1,3 +1,4 @@
+import { Rating } from '@app/ratings/entities/rating.entity';
 import { User } from '@app/users/entities/user.entity';
 import {
   Column,
@@ -20,6 +21,10 @@ export class Series {
 
   @Column()
   description: string;
+
+  @ManyToOne(() => Rating)
+  @JoinColumn({ name: 'rating_id', referencedColumnName: 'id' })
+  rating: Rating;
 
   @Column()
   recommendScore: number;
