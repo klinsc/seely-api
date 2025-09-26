@@ -17,6 +17,7 @@ import { ConfigifyModule } from '@itgorillaz/configify';
 // import { FoodRecipesModule } from './food-recipes/food-recipes.module';
 import { LoginLoggerMiddleware } from './middlewares/login-logger.middleware';
 import { dataSourceOpts } from './data-source';
+import { RatingsModule } from './ratings/ratings.module';
 import { SeriesModule } from './series/series.module';
 
 @Module({
@@ -33,6 +34,7 @@ import { SeriesModule } from './series/series.module';
     // CookingDurationsModule,
     UsersModule,
     AuthModule,
+    RatingsModule,
     SeriesModule,
     // FoodRecipesModule,
   ],
