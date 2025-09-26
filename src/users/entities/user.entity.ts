@@ -1,6 +1,5 @@
 // user.entity.ts
-import { Series } from '@app/series/entities/series.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Role {
   USER = 'USER',
@@ -31,7 +30,4 @@ export class User {
 
   @Column({ name: 'keycloak_id', unique: true, nullable: true })
   keycloakId: string;
-
-  @OneToMany(() => Series, (series) => series.createdBy)
-  seriesCreated: Series[];
 }

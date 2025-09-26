@@ -27,6 +27,7 @@ export class AuthService {
     }
     // return token
     const loggedInDto: LoggedInDto = {
+      id: user.id,
       username: user.username,
       role: user.role,
     };

@@ -1,23 +1,89 @@
-import { Injectable } from '@nestjs/common';
+import { LoggedInDto } from '@app/auth/dto/logged-in.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, PaginateConfig, PaginateQuery } from 'nestjs-paginate';
+import { Repository } from 'typeorm';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
+import { Series } from './entities/series.entity';
+
+export const paginateConfig: PaginateConfig<Series> = {
+  // Add `export`
+  sortableColumns: [
+    'title',
+    'year',
+    'description',
+    'recommendScore',
+    'avgReviewScore',
+    'reviewCount',
+  ],
+  searchableColumns: ['title', 'year', 'description', 'recommendScore'],
+  defaultSortBy: [['title', 'ASC']],
+  nullSort: 'last',
+};
 
 @Injectable()
 export class SeriesService {
-  create(createSeriesDto: CreateSeriesDto) {
-    return 'This action adds a new series';
+  constructor(
+    @InjectRepository(Series) private repository: Repository<Series>,
+  ) {}
+
+  create(createSeriesDto: CreateSeriesDto, loggedInDto: LoggedInDto) {
+    return this.repository.save({
+      ...createSeriesDto,
+      user: { username: loggedInDto.username },
+    });
   }
 
-  findAll() {
-    return `This action returns all series`;
+  private queryTemplate() {
+    return this.repository
+      .createQueryBuilder('series')
+      .leftJoinAndSelect('series.rating', 'rating')
+      .leftJoin('series.createdBy', 'createdBy')
+      .addSelect('createdBy.id')
+      .addSelect('createdBy.username')
+      .addSelect('createdBy.role');
+  }
+
+  async search(query: PaginateQuery) {
+    const page = await paginate<Series>(
+      query,
+      this.queryTemplate(),
+      paginateConfig,
+    );
+
+    return {
+      data: page.data,
+      meta: page.meta,
+    };
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} series`;
+    return this.queryTemplate().where('series.id = :id', { id }).getOne();
   }
 
-  update(id: number, updateSeriesDto: UpdateSeriesDto) {
-    return `This action updates a #${id} series`;
+  update(
+    id: number,
+    updateSeriesDto: UpdateSeriesDto,
+    loggedInDto: LoggedInDto,
+  ) {
+    return this.repository
+      .findOneByOrFail({ id })
+      .then((series) => {
+        if (series.createdBy.id !== loggedInDto.id) {
+          throw new Error('You are not authorized to update this series');
+        }
+
+        const updatedSeries = { ...series, ...updateSeriesDto };
+        return this.repository.save(updatedSeries);
+      })
+      .catch((error) => {
+        console.error(error);
+
+        throw new NotFoundException(
+          `Series with ID ${id} not found or you are not authorized to update it.`,
+        );
+      });
   }
 
   remove(id: number) {

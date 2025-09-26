@@ -35,15 +35,9 @@ export class Series {
   @Column()
   reviewCount: number;
 
-  @ManyToOne(() => User, (user) => user.seriesCreated, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'username', referencedColumnName: 'username' })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'created_by_id', referencedColumnName: 'id' })
   createdBy: User;
-
-  @Column()
-  createdById: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

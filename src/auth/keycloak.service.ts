@@ -117,6 +117,7 @@ export class KeycloakService {
 
     // prepare loggedInDto
     const loggedInDto: LoggedInDto = {
+      id: user.id,
       username: user.username,
       role: user.role,
     };

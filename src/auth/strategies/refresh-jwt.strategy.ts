@@ -20,6 +20,6 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   validate(user: LoggedInDto): LoggedInDto {
-    return { username: user.username, role: user.role };
+    return { id: user.id, username: user.username, role: user.role };
   }
 }
