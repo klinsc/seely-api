@@ -89,7 +89,20 @@ export class SeriesService {
     return this.repository.save(updatedSeries);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} series`;
+  async remove(id: number, loggedInDto: LoggedInDto) {
+    const series = await this.queryTemplate()
+      .where('series.id = :id', { id })
+      .getOne();
+    if (!series) {
+      throw new NotFoundException(`Series with ID ${id} not found.`);
+    }
+
+    if (series.createdBy.id !== loggedInDto.id) {
+      throw new NotFoundException(
+        `You are not authorized to delete Series with ID ${id}.`,
+      );
+    }
+
+    return this.repository.softDelete(id);
   }
 }

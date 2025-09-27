@@ -56,8 +56,9 @@ export class SeriesController {
     return this.seriesService.update(id, updateSeriesDto, request.user);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.seriesService.remove(+id);
+  remove(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
+    return this.seriesService.remove(+id, request.user);
   }
 }
