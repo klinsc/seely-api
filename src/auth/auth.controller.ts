@@ -26,6 +26,7 @@ export class AuthController {
   refreshToken(@Req() request: { user: LoggedInDto }) {
     return this.authService.refreshToken(request.user);
   }
+
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('refreshToken');
