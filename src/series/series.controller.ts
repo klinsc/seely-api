@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { paginateConfig, SeriesService } from './series.service';
 import { CreateSeriesDto } from './dto/create-series.dto';
@@ -25,7 +26,6 @@ export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Post()
   @Post()
   create(
     @Body() createSeriesDto: CreateSeriesDto,
@@ -46,13 +46,14 @@ export class SeriesController {
     return this.seriesService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateSeriesDto: UpdateSeriesDto,
     @Req() request: { user: LoggedInDto },
   ) {
-    return this.seriesService.update(+id, updateSeriesDto, request.user);
+    return this.seriesService.update(id, updateSeriesDto, request.user);
   }
 
   @Delete(':id')

@@ -31,7 +31,10 @@ export class SeriesService {
   create(createSeriesDto: CreateSeriesDto, loggedInDto: LoggedInDto) {
     return this.repository.save({
       ...createSeriesDto,
-      user: { username: loggedInDto.username },
+      rating: { id: createSeriesDto.ratingId } as { id: number },
+      createdBy: { id: loggedInDto.id } as {
+        id: number;
+      },
     });
   }
 
@@ -62,28 +65,28 @@ export class SeriesService {
     return this.queryTemplate().where('series.id = :id', { id }).getOne();
   }
 
-  update(
+  async update(
     id: number,
     updateSeriesDto: UpdateSeriesDto,
     loggedInDto: LoggedInDto,
   ) {
-    return this.repository
-      .findOneByOrFail({ id })
-      .then((series) => {
-        if (series.createdBy.id !== loggedInDto.id) {
-          throw new Error('You are not authorized to update this series');
-        }
-
-        const updatedSeries = { ...series, ...updateSeriesDto };
-        return this.repository.save(updatedSeries);
-      })
-      .catch((error) => {
-        console.error(error);
-
-        throw new NotFoundException(
-          `Series with ID ${id} not found or you are not authorized to update it.`,
-        );
-      });
+    const series = await this.repository.findOneBy({
+      id,
+      createdBy: { id: loggedInDto.id },
+    });
+    if (!series) {
+      throw new NotFoundException(
+        `Series with ID ${id} not found or you are not authorized to update it.`,
+      );
+    }
+    const updatedSeries = {
+      ...series,
+      ...updateSeriesDto,
+      rating: updateSeriesDto.ratingId
+        ? { id: updateSeriesDto.ratingId }
+        : series.rating,
+    };
+    return this.repository.save(updatedSeries);
   }
 
   remove(id: number) {

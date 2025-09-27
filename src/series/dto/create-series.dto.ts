@@ -10,7 +10,7 @@ export const createSerieSchema = z
       .min(1888, 'year is invalid')
       .max(new Date().getFullYear(), 'year is invalid'),
     description: z.string().min(1, 'description is required'),
-    rating_id: z
+    ratingId: z
       .number()
       .int()
       .min(1, 'ratingId is required')
@@ -18,7 +18,6 @@ export const createSerieSchema = z
     recommendScore: z.number().min(0).max(10),
     avgReviewScore: z.number().min(0).max(10).optional().default(0),
     reviewCount: z.number().min(0).optional().default(0),
-    createdById: z.number().int().min(1, 'createdById is required'),
   })
   .strict();
 

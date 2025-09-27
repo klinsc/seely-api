@@ -4,7 +4,6 @@ import { createSerieSchema } from './create-series.dto';
 
 export const updateSerieSchema = createSerieSchema
   .extend({
-    id: z.number().int().min(1, 'id is required'),
     title: z.string().min(1, 'name is required').optional(),
     year: z
       .number()
@@ -13,7 +12,7 @@ export const updateSerieSchema = createSerieSchema
       .max(new Date().getFullYear(), 'year is invalid')
       .optional(),
     description: z.string().min(1, 'description is required').optional(),
-    rating_id: z
+    ratingId: z
       .number()
       .int()
       .min(1, 'ratingId is required')
@@ -21,7 +20,6 @@ export const updateSerieSchema = createSerieSchema
     recommendScore: z.number().min(0).max(10).optional(),
     avgReviewScore: z.number().min(0).max(10).optional(),
     reviewCount: z.number().min(0).optional(),
-    createdById: z.number().int().min(1, 'createdById is required').optional(),
   })
   .strict();
 
