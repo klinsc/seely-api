@@ -22,7 +22,7 @@ export class InitReviews1759025624836 implements MigrationInterface {
     //   deletedAt: Date | null;
 
     await queryRunner.query(`
-      CREATE TABLE "Reviews" (
+      CREATE TABLE "reviews" (
         id SERIAL PRIMARY KEY,
         created_by_id INTEGER REFERENCES "users"(id),
         series_id INTEGER REFERENCES "series"(id),
@@ -49,7 +49,7 @@ export class InitReviews1759025624836 implements MigrationInterface {
       for (let i = 1; i <= 3; i++) {
         await queryRunner.query(
           `
-            INSERT INTO "Reviews" (created_by_id, series_id, score, comment, "createdAt", "updatedAt")
+            INSERT INTO "reviews" (created_by_id, series_id, score, comment, "createdAt", "updatedAt")
             VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
           `,
           [
@@ -74,7 +74,7 @@ export class InitReviews1759025624836 implements MigrationInterface {
           r.series_id,
           AVG(r.score) AS avg_score,
           COUNT(r.id) AS review_count
-        FROM "Reviews" r
+        FROM "reviews" r
         GROUP BY r.series_id
       ) AS sub
       WHERE s.id = sub.series_id;
@@ -82,6 +82,6 @@ export class InitReviews1759025624836 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE IF EXISTS "Reviews"`);
+    await queryRunner.query(`DROP TABLE IF EXISTS "reviews"`);
   }
 }

@@ -28,8 +28,8 @@ export class Series {
   @JoinColumn({ name: 'rating_id', referencedColumnName: 'id' })
   rating: Rating;
 
-  @Column()
-  recommendScore: number;
+  // @Column()
+  // recommendScore: number;
 
   @Column({
     type: 'float',
