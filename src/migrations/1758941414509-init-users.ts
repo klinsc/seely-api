@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+﻿import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitUsers1758941414509 implements MigrationInterface {
   // // user.entity.ts

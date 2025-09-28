@@ -1,1 +1,1 @@
-export class CreateRatingDto {}
+﻿export class CreateRatingDto {}

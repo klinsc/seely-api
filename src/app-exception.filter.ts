@@ -1,4 +1,4 @@
-// app-exception.filter.ts
+﻿// app-exception.filter.ts
 import { ArgumentsHost, Catch, ConflictException } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { QueryFailedError } from 'typeorm';
