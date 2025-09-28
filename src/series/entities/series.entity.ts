@@ -31,7 +31,10 @@ export class Series {
   @Column()
   recommendScore: number;
 
-  @Column()
+  @Column({
+    type: 'float',
+    default: 0,
+  })
   avgReviewScore: number;
 
   @Column()

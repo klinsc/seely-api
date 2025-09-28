@@ -18,7 +18,7 @@ export const updateSerieSchema = createSerieSchema
       .min(1, 'ratingId is required')
       .max(6, 'ratingId is invalid'),
     recommendScore: z.number().min(0).max(10).optional(),
-    avgReviewScore: z.number().min(0).max(10).optional(),
+    // avgReviewScore: z.number().min(0).max(10).optional(),
     reviewCount: z.number().min(0).optional(),
   })
   .strict();
