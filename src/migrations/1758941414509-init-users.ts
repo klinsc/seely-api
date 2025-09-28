@@ -1,44 +1,7 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+﻿import { MigrationInterface, QueryRunner } from 'typeorm';
+// import bcrypt from 'bcrypt';
 
 export class InitUsers1758941414509 implements MigrationInterface {
-  // // user.entity.ts
-  // import { Series } from '@app/series/entities/series.entity';
-  // import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-  // export enum Role {
-  //   USER = 'USER',
-  //   ADMIN = 'ADMIN',
-  // }
-
-  // @Entity('users')
-  // export class User {
-  //   @PrimaryGeneratedColumn()
-  //   id: number;
-
-  //   @Column({
-  //     unique: true,
-  //     nullable: false,
-  //   })
-  //   username: string;
-
-  //   @Column({
-  //     nullable: true,
-  //   })
-  //   password: string;
-
-  //   @Column({
-  //     nullable: false,
-  //     default: Role.USER,
-  //   })
-  //   role: Role;
-
-  //   @Column({ name: 'keycloak_id', unique: true, nullable: true })
-  //   keycloakId: string;
-
-  //   @OneToMany(() => Series, (series) => series.createdBy)
-  //   series: Series[];
-  // }
-
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE "users" (
@@ -52,6 +15,20 @@ export class InitUsers1758941414509 implements MigrationInterface {
         CONSTRAINT "PK_users_id" PRIMARY KEY ("id")
       )
     `);
+
+    // TODO: Add default users
+
+    // const users =[
+    //   { username: 'user', password: 'password', role: 'USER' },
+    //   { username: 'manager', password: 'password', role: 'MANAGER' },
+    // ]
+    // const hashedPassword = await bcrypt.hash(.password, 10);
+
+    // // Add ADMIN user
+    // await queryRunner.query(`
+    //   INSERT INTO "users" (username, password, role)
+    //   VALUES ('admin', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'ADMIN')
+    // `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

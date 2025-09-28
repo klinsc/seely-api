@@ -1,4 +1,4 @@
-// app.module.ts
+﻿// app.module.ts
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigifyModule } from '@itgorillaz/configify';
 import { RatingsModule } from './ratings/ratings.module';
 import { SeriesModule } from './series/series.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SeriesModule } from './series/series.module';
     AuthModule,
     RatingsModule,
     SeriesModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_PIPE, useClass: ZodValidationPipe }, AppService],

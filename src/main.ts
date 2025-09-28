@@ -1,4 +1,4 @@
-// main.ts
+﻿// main.ts
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';

@@ -1,4 +1,4 @@
-import { Rating } from '@app/ratings/entities/rating.entity';
+﻿import { Rating } from '@app/ratings/entities/rating.entity';
 import { User } from '@app/users/entities/user.entity';
 import {
   Column,

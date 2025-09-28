@@ -1,4 +1,4 @@
-// user.entity.ts
+﻿// user.entity.ts
 import { Series } from '@app/series/entities/series.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 

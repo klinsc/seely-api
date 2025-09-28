@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+﻿import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitSeries1758941485698 implements MigrationInterface {
   // import { Rating } from '@app/ratings/entities/rating.entity';
