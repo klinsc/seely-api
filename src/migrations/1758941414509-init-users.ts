@@ -1,5 +1,5 @@
 ﻿import { MigrationInterface, QueryRunner } from 'typeorm';
-// import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 export class InitUsers1758941414509 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -16,19 +16,35 @@ export class InitUsers1758941414509 implements MigrationInterface {
       )
     `);
 
-    // TODO: Add default users
+    // Add default users
+    const users = [
+      { username: 'u111', password: 'u111', role: 'USER' },
+      { username: 'u112', password: 'u112', role: 'USER' },
+      { username: 'u115', password: 'u115', role: 'USER' },
+      { username: 'u116', password: 'u116', role: 'USER' },
+      { username: 'u118', password: 'u118', role: 'USER' },
+      { username: 'u119', password: 'u119', role: 'USER' },
 
-    // const users =[
-    //   { username: 'user', password: 'password', role: 'USER' },
-    //   { username: 'manager', password: 'password', role: 'MANAGER' },
-    // ]
-    // const hashedPassword = await bcrypt.hash(.password, 10);
+      { username: 'manager', password: 'password', role: 'MANAGER' },
+    ];
 
-    // // Add ADMIN user
-    // await queryRunner.query(`
-    //   INSERT INTO "users" (username, password, role)
-    //   VALUES ('admin', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'ADMIN')
-    // `);
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedUsers = users.map(async (user) => ({
+      ...user,
+      password: user.password ? await bcrypt.hash(user.password, 10) : null,
+    }));
+
+    const resolvedUsers = await Promise.all(hashedUsers);
+
+    for (const user of resolvedUsers) {
+      await queryRunner.query(
+        `
+        INSERT INTO "users" (username, password, role)
+        VALUES ($1, $2, $3)
+      `,
+        [user.username, user.password, user.role],
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
