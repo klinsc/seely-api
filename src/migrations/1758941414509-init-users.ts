@@ -25,7 +25,7 @@ export class InitUsers1758941414509 implements MigrationInterface {
       { username: 'u118', password: 'u118', role: 'USER' },
       { username: 'u119', password: 'u119', role: 'USER' },
 
-      { username: 'manager', password: 'password', role: 'MANAGER' },
+      { username: 'admin', password: 'changeit', role: 'ADMIN' },
     ];
 
     // const hashedPassword = await bcrypt.hash(password, 10);
