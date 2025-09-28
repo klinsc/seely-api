@@ -43,6 +43,10 @@ export class ReviewsController {
   bySeriesId(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
     return this.reviewsService.findBySeries(+id, request.user);
   }
+  @Get('user/:id')
+  byUserId(@Param('id') id: string) {
+    return this.reviewsService.findByUser(+id);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {

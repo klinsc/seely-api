@@ -41,6 +41,13 @@ export class ReviewsService {
     });
   }
 
+  findByUser(userId: number) {
+    return this.repository.find({
+      where: { createdBy: { id: userId } },
+      relations: ['forSeries'],
+    });
+  }
+
   update(id: number, updateReviewDto: UpdateReviewDto) {
     return `This action updates a #${id} review`;
   }
