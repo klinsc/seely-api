@@ -43,18 +43,26 @@ export class ReviewsController {
   bySeriesId(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
     return this.reviewsService.findBySeries(+id, request.user);
   }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get('user/:id')
   byUserId(@Param('id') id: string) {
     return this.reviewsService.findByUser(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewsService.update(+id, updateReviewDto);
+  update(
+    @Param('id') id: string,
+    @Req() request: { user: LoggedInDto },
+    @Body() updateReviewDto: UpdateReviewDto,
+  ) {
+    return this.reviewsService.update(+id, updateReviewDto, request.user);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewsService.remove(+id);
+  remove(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
+    return this.reviewsService.remove(+id, request.user);
   }
 }

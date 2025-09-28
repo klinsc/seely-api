@@ -1,4 +1,8 @@
-﻿import { Injectable, UnauthorizedException } from '@nestjs/common';
+﻿import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { LoggedInDto } from '@app/auth/dto/logged-in.dto';
@@ -48,11 +52,53 @@ export class ReviewsService {
     });
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  // update(id: number, updateReviewDto: UpdateReviewDto) {
+  //   return `This action updates a #${id} review`;
+  // }
+
+  async update(
+    id: number,
+    updateReviewDto: UpdateReviewDto,
+    loggedInDto: LoggedInDto,
+  ) {
+    const review = await this.repository.find({
+      where: { id },
+      relations: ['createdBy'],
+    });
+
+    if (review.length === 0) {
+      throw new NotFoundException(`Review with ID ${id} not found.`);
+    }
+
+    if (review[0].createdBy.id !== loggedInDto.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to update this review.',
+      );
+    }
+
+    return this.repository.update(id, updateReviewDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  // remove(id: number) {
+  //   return `This action removes a #${id} review`;
+  // }
+
+  async remove(id: number, loggedInDto: LoggedInDto) {
+    const review = await this.repository.find({
+      where: { id },
+      relations: ['createdBy'],
+    });
+    if (review.length === 0) {
+      throw new NotFoundException(`Review with ID ${id} not found.`);
+    }
+
+    if (review[0].createdBy.id !== loggedInDto.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to delete this review.',
+      );
+    }
+
+    await this.repository.delete(id);
+    return { message: `Review with ID ${id} has been deleted.` };
   }
 }
