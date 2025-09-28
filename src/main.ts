@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { updateGlobalConfig } from 'nestjs-paginate';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppExceptionFilter } from './app-exception.filter';
+import 'reflect-metadata';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

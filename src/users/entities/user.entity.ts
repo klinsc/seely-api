@@ -1,4 +1,5 @@
 ﻿// user.entity.ts
+import { Review } from '@app/reviews/entities/review.entity';
 import { Series } from '@app/series/entities/series.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -34,4 +35,7 @@ export class User {
 
   @OneToMany(() => Series, (series) => series.createdBy)
   series: Series[];
+
+  @OneToMany(() => Review, (review) => review.createdBy)
+  reviews: Review[];
 }

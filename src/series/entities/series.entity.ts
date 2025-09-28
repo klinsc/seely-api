@@ -1,10 +1,12 @@
 ﻿import { Rating } from '@app/ratings/entities/rating.entity';
+import { Review } from '@app/reviews/entities/review.entity';
 import { User } from '@app/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -38,6 +40,9 @@ export class Series {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'created_by_id', referencedColumnName: 'id' })
   createdBy: User;
+
+  @OneToMany(() => Review, (review) => review.forSeries)
+  reviews: Review[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
