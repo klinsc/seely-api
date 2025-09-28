@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+﻿import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { LoggedInDto } from '@app/auth/dto/logged-in.dto';
@@ -28,6 +28,17 @@ export class ReviewsService {
 
   findOne(id: number) {
     return `This action returns a #${id} review`;
+  }
+
+  findBySeries(seriesId: number, loggedInDto: LoggedInDto) {
+    if (!loggedInDto?.id || !loggedInDto?.username) {
+      throw new UnauthorizedException('You must be logged in to view reviews.');
+    }
+
+    return this.repository.find({
+      where: { forSeries: { id: seriesId } },
+      relations: ['createdBy'],
+    });
   }
 
   update(id: number, updateReviewDto: UpdateReviewDto) {

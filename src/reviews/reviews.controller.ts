@@ -38,6 +38,12 @@ export class ReviewsController {
     return this.reviewsService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get('series/:id')
+  bySeriesId(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
+    return this.reviewsService.findBySeries(+id, request.user);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
     return this.reviewsService.update(+id, updateReviewDto);
