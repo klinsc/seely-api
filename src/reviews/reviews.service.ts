@@ -26,12 +26,11 @@ export class ReviewsService {
     });
   }
 
-  findAll() {
-    return `This action returns all reviews`;
-  }
-
   findOne(id: number) {
-    return `This action returns a #${id} review`;
+    return this.repository.findOne({
+      where: { id, deletedAt: undefined },
+      relations: ['createdBy', 'forSeries'],
+    });
   }
 
   findBySeries(seriesId: number, loggedInDto: LoggedInDto) {
@@ -40,21 +39,17 @@ export class ReviewsService {
     }
 
     return this.repository.find({
-      where: { forSeries: { id: seriesId } },
+      where: { forSeries: { id: seriesId }, deletedAt: undefined },
       relations: ['createdBy'],
     });
   }
 
   findByUser(userId: number) {
     return this.repository.find({
-      where: { createdBy: { id: userId } },
+      where: { createdBy: { id: userId }, deletedAt: undefined },
       relations: ['forSeries'],
     });
   }
-
-  // update(id: number, updateReviewDto: UpdateReviewDto) {
-  //   return `This action updates a #${id} review`;
-  // }
 
   async update(
     id: number,
@@ -62,10 +57,9 @@ export class ReviewsService {
     loggedInDto: LoggedInDto,
   ) {
     const review = await this.repository.find({
-      where: { id },
+      where: { id, deletedAt: undefined },
       relations: ['createdBy'],
     });
-
     if (review.length === 0) {
       throw new NotFoundException(`Review with ID ${id} not found.`);
     }
@@ -76,16 +70,23 @@ export class ReviewsService {
       );
     }
 
-    return this.repository.update(id, updateReviewDto);
-  }
+    const result = await this.repository.update(id, updateReviewDto);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Review with ID ${id} not found.`);
+    }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} review`;
-  // }
+    // Update the average score of the series after updating the review
+    await this.UpdateAvgScore(review[0].forSeries.id);
+
+    return this.repository.findOne({
+      where: { id },
+      relations: ['createdBy', 'forSeries'],
+    });
+  }
 
   async remove(id: number, loggedInDto: LoggedInDto) {
     const review = await this.repository.find({
-      where: { id },
+      where: { id, deletedAt: undefined },
       relations: ['createdBy'],
     });
     if (review.length === 0) {
@@ -98,7 +99,62 @@ export class ReviewsService {
       );
     }
 
-    await this.repository.delete(id);
+    // Soft delete the review
+    await this.repository.softDelete(id);
+
+    // Update the average score of the series after deleting the review
+    await this.UpdateAvgScore(review[0].forSeries.id);
+
     return { message: `Review with ID ${id} has been deleted.` };
+  }
+
+  // Get avgScore methods the average score for a series based on its reviews
+  async GetAvgScore(seriesId: number) {
+    const reviews = await this.repository.find({
+      where: { forSeries: { id: seriesId } },
+    });
+
+    if (reviews.length === 0) {
+      throw new NotFoundException(
+        `No reviews found for series with ID ${seriesId}.`,
+      );
+    }
+
+    const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
+    const avgScore = totalScore / reviews.length;
+
+    return { avgScore, reviewCount: reviews.length };
+  }
+
+  // UpdateAvgScore method to update the average score of a series
+  async UpdateAvgScore(seriesId: number) {
+    // Check if there are any reviews for the series
+    const reviews = await this.repository.find({
+      where: { forSeries: { id: seriesId }, deletedAt: undefined },
+    });
+    if (reviews.length === 0) {
+      throw new NotFoundException(
+        `No reviews found for series with ID ${seriesId}.`,
+      );
+    }
+
+    // Calculate the new average score
+    const { avgScore, reviewCount } = await this.GetAvgScore(seriesId);
+
+    // Update the series with the new average score
+    const result = await this.repository
+      .createQueryBuilder()
+      .update('series')
+      .set({ avgScore, reviewCount })
+      .where('id = :id', { id: seriesId })
+      .execute();
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Series with ID ${seriesId} not found.`);
+    }
+
+    return {
+      message: `Average score for series with ID ${seriesId} updated to ${avgScore}.`,
+    };
   }
 }

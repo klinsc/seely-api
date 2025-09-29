@@ -28,11 +28,6 @@ export class ReviewsController {
     return this.reviewsService.create(createReviewDto, request.user);
   }
 
-  @Get()
-  findAll() {
-    return this.reviewsService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reviewsService.findOne(+id);
