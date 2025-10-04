@@ -28,7 +28,7 @@ export class UsersService {
   }
 
   findByUsername(username: string) {
-    return this.repository.findOneByOrFail({ username });
+    return this.repository.findOneBy({ username });
   }
 
   async upsertByKeycloakId(
