@@ -42,11 +42,7 @@ export class ReviewsService {
     });
   }
 
-  findBySeries(seriesId: number, loggedInDto: LoggedInDto) {
-    if (!loggedInDto?.id || !loggedInDto?.username) {
-      throw new UnauthorizedException('You must be logged in to view reviews.');
-    }
-
+  findBySeries(seriesId: number) {
     return this.repository.find({
       where: { forSeries: { id: seriesId }, deletedAt: undefined },
       relations: ['createdBy'],
@@ -67,7 +63,7 @@ export class ReviewsService {
   ) {
     const review = await this.repository.find({
       where: { id, deletedAt: undefined },
-      relations: ['createdBy'],
+      relations: ['createdBy', 'forSeries'],
     });
     if (review.length === 0) {
       throw new NotFoundException(`Review with ID ${id} not found.`);
@@ -96,7 +92,7 @@ export class ReviewsService {
   async remove(id: number, loggedInDto: LoggedInDto) {
     const review = await this.repository.find({
       where: { id, deletedAt: undefined },
-      relations: ['createdBy'],
+      relations: ['createdBy', 'forSeries'],
     });
     if (review.length === 0) {
       throw new NotFoundException(`Review with ID ${id} not found.`);
