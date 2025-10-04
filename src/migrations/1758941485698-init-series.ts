@@ -60,7 +60,7 @@ export class InitSeries1758941485698 implements MigrationInterface {
         "year" integer NOT NULL,
         "description" character varying NOT NULL,
         "rating_id" integer,
-        "avgReviewScore" integer NOT NULL,
+        "avgReviewScore" double precision NOT NULL,
         "reviewCount" integer NOT NULL,
         "created_by_id" integer,
         "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
