@@ -2,6 +2,7 @@
 import { User } from '@app/users/entities/user.entity';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -33,6 +34,6 @@ export class Review {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @DeleteDateColumn({ type: 'timestamp', name: 'deletedAt', nullable: true })
   deletedAt: Date | null;
 }
