@@ -1,6 +1,10 @@
 ﻿// auth.service.ts
 import { UsersService } from '@app/users/users.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { TokensDto } from './dto/tokens.dto';
 import bcrypt from 'bcrypt';
@@ -17,6 +21,11 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<TokensDto> {
     // find by username
     const user = await this.usersService.findByUsername(loginDto.username);
+    if (!user) {
+      throw new NotFoundException(
+        `user not found: username=${loginDto.username}`,
+      );
+    }
 
     // compare hashed-password
     const matched = await bcrypt.compare(loginDto.password, user.password);
