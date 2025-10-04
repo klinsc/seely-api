@@ -16,13 +16,22 @@ export class ReviewsService {
     @InjectRepository(Review) private repository: Repository<Review>,
   ) {}
 
-  create(createReviewDto: CreateReviewDto, loggedInDto: LoggedInDto) {
-    return this.repository.save({
+  async create(createReviewDto: CreateReviewDto, loggedInDto: LoggedInDto) {
+    const review = this.repository.create({
       ...createReviewDto,
       forSeries: { id: createReviewDto.forSeriesId } as { id: number },
       createdBy: { id: loggedInDto.id } as {
         id: number;
       },
+    });
+    await this.repository.save(review);
+
+    // Update the average score of the series after creating the review
+    await this.UpdateAvgScore(createReviewDto.forSeriesId);
+
+    return this.repository.findOne({
+      where: { id: review.id },
+      relations: ['createdBy', 'forSeries'],
     });
   }
 
@@ -121,9 +130,11 @@ export class ReviewsService {
     }
 
     const totalScore = reviews.reduce((sum, review) => sum + review.score, 0);
-    const avgScore = totalScore / reviews.length;
+    // Round to 4 decimal places
+    const avgReviewScore =
+      Math.round((totalScore / reviews.length) * 10000) / 10000;
 
-    return { avgScore, reviewCount: reviews.length };
+    return { avgReviewScore: avgReviewScore, reviewCount: reviews.length };
   }
 
   // UpdateAvgScore method to update the average score of a series
@@ -139,13 +150,13 @@ export class ReviewsService {
     }
 
     // Calculate the new average score
-    const { avgScore, reviewCount } = await this.GetAvgScore(seriesId);
+    const { avgReviewScore, reviewCount } = await this.GetAvgScore(seriesId);
 
     // Update the series with the new average score
     const result = await this.repository
       .createQueryBuilder()
       .update('series')
-      .set({ avgScore, reviewCount })
+      .set({ avgReviewScore, reviewCount })
       .where('id = :id', { id: seriesId })
       .execute();
 
@@ -154,7 +165,7 @@ export class ReviewsService {
     }
 
     return {
-      message: `Average score for series with ID ${seriesId} updated to ${avgScore}.`,
+      message: `Average score for series with ID ${seriesId} updated to ${avgReviewScore}.`,
     };
   }
 }
