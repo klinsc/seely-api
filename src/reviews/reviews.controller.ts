@@ -33,10 +33,9 @@ export class ReviewsController {
     return this.reviewsService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('series/:id')
-  bySeriesId(@Param('id') id: string, @Req() request: { user: LoggedInDto }) {
-    return this.reviewsService.findBySeries(+id, request.user);
+  bySeriesId(@Param('id') id: string) {
+    return this.reviewsService.findBySeries(+id);
   }
 
   @UseGuards(AuthGuard('jwt'))
